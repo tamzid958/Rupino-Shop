@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
+import 'package:shopaccount/src/layouts/miscellans/AddNewMisc.dart';
 import 'package:shopaccount/src/models/costLists.dart';
-
 import 'Lists.dart';
 
-class Body extends StatelessWidget {
-  const Body({
+class MiscScreen extends StatefulWidget {
+  const MiscScreen({
     Key key,
   }) : super(key: key);
 
   @override
+  _MiscScreenState createState() => _MiscScreenState();
+}
+
+class _MiscScreenState extends State<MiscScreen> {
+  @override
   Widget build(BuildContext context) {
+    void _addNewMisc() {
+      showMaterialModalBottomSheet(
+        context: context,
+        builder: (context) => AddNewMisc(),
+      );
+    }
+
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Column(
@@ -19,11 +32,11 @@ class Body extends StatelessWidget {
             width: double.infinity,
             child: RaisedButton.icon(
               color: kOrangeColor,
-              onPressed: () {},
+              onPressed: _addNewMisc,
               icon: Icon(
                 Icons.add_box_rounded,
               ),
-              label: Text("Add New Stock"),
+              label: Text("New Misc."),
             ),
           ),
           SizedBox(
@@ -31,7 +44,7 @@ class Body extends StatelessWidget {
           ),
           Container(
             height: 30,
-            color: kBlackColor,
+            color: kLightBlueColor,
             child: Padding(
               padding:
                   EdgeInsets.fromLTRB(KdefaultPaddin, 0, KdefaultPaddin, 0),
@@ -39,15 +52,11 @@ class Body extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Quantity",
+                    "Cost Name",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Product Name",
-                    style: TextStyle(color: kWhiteColor),
-                  ),
-                  Text(
-                    "Total Price",
+                    "Cost",
                     style: TextStyle(color: kWhiteColor),
                   ),
                 ],
@@ -67,12 +76,35 @@ class Body extends StatelessWidget {
                   itemCount: listfiles.length,
                   separatorBuilder: (BuildContext context, int index) =>
                       Divider(
-                    height: 5,
-                    color: kBlackColor,
-                    thickness: 2,
+                    height: 10,
+                    color: kLightBlueColor,
+                    thickness: 1,
                   ),
-                  itemBuilder: (context, int index) => ShopLists(
-                    shopList: listfiles[index],
+                  itemBuilder: (context, int index) => Dismissible(
+                    key: Key(
+                      listfiles[index].id.toString(),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      setState(() {
+                        listfiles.removeAt(index);
+                      });
+                    },
+                    background: Container(
+                      color: kRedColor,
+                      child: Padding(
+                        padding: EdgeInsets.all(KmodiPaddin),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(Icons.delete, color: kWhiteColor),
+                          ],
+                        ),
+                      ),
+                    ),
+                    child: ShopLists(
+                      listFiles: listfiles[index],
+                    ),
                   ),
                 ),
               ],

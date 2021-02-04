@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shopaccount/constants.dart';
-import 'components/Body.dart';
+import 'package:shopaccount/src/layouts/damage/body.dart';
+import 'package:shopaccount/src/layouts/miscellans/body.dart';
+import 'package:shopaccount/src/layouts/return/body.dart';
+import 'package:shopaccount/src/layouts/sell/body.dart';
+import 'package:shopaccount/src/layouts/stock/Body.dart';
+import 'package:shopaccount/src/layouts/user/user.dart';
+import 'package:shopaccount/src/models/costLists.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -10,26 +17,44 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    int _selectedIndex = 0;
-    void _onItemTapped(int index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-
+    double profit = 0;
+    final formatCurrency = NumberFormat.compact();
+    final List<Widget> _children = [
+      StockScreen(),
+      SellScreen(),
+      MiscScreen(),
+      ReturnScreen(),
+      DamageScreen()
+    ];
+    listfiles.forEach((element) {
+      profit += element.perQuantityPrice * element.quantity;
+    });
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Home"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.supervised_user_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserScreen()),
+              );
+            },
           ),
         ],
       ),
-      body: Body(),
+      body: _children[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -77,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: kBlueColor,
-        label: Text("\৳ 300"),
+        label: Text("\৳ " + formatCurrency.format(profit)),
         icon: Icon(
           Icons.timeline,
           color: kWhiteColor,
