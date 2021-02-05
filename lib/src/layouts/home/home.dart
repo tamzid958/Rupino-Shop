@@ -8,9 +8,11 @@ import 'package:shopaccount/src/layouts/sell/body.dart';
 import 'package:shopaccount/src/layouts/stock/Body.dart';
 import 'package:shopaccount/src/layouts/user/user.dart';
 import 'package:shopaccount/src/models/costLists.dart';
+import 'package:shopaccount/src/layouts/products/Body.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
+  final VoidCallback onSignedOut;
+  const HomeScreen({Key key, this.onSignedOut}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -33,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
       SellScreen(),
       MiscScreen(),
       ReturnScreen(),
-      DamageScreen()
+      DamageScreen(),
+      ProductsScreen(),
     ];
     listfiles.forEach((element) {
       profit += element.perQuantityPrice * element.quantity;
@@ -48,8 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserScreen()),
+                MaterialPageRoute(
+                  builder: (context) => UserScreen(
+                    onSignedOut: widget.onSignedOut,
+                  ),
+                ),
               );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {});
             },
           ),
         ],
@@ -91,6 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.broken_image_outlined),
                 label: 'Damage',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Products',
               ),
             ],
             currentIndex: _selectedIndex,

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/layouts/stock/AddNewStock.dart';
+import 'package:shopaccount/src/layouts/stock/UpdateStock.dart';
 import 'package:shopaccount/src/models/costLists.dart';
-
-import 'AddNewProduct.dart';
-import 'Details.dart';
-import 'Lists.dart';
 
 class StockScreen extends StatefulWidget {
   const StockScreen({
@@ -18,16 +16,7 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
+  final formatCurrency = NumberFormat.compact();
   @override
   Widget build(BuildContext context) {
     void _addNewStock() {
@@ -37,37 +26,20 @@ class _StockScreenState extends State<StockScreen> {
       );
     }
 
-    void _addNewProduct() {
-      showMaterialModalBottomSheet(
-        context: context,
-        builder: (context) => AddNewProduct(),
-      );
-    }
-
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RaisedButton.icon(
-                color: kOrangeColor,
-                onPressed: _addNewProduct,
-                icon: Icon(
-                  Icons.add_box_rounded,
-                ),
-                label: Text("New Product"),
+          SizedBox(
+            width: double.infinity,
+            child: RaisedButton.icon(
+              color: kOrangeColor,
+              onPressed: _addNewStock,
+              icon: Icon(
+                Icons.add_box_rounded,
               ),
-              RaisedButton.icon(
-                color: kOrangeColor,
-                onPressed: _addNewStock,
-                icon: Icon(
-                  Icons.add_box_rounded,
-                ),
-                label: Text("New Stock"),
-              ),
-            ],
+              label: Text("New Stock"),
+            ),
           ),
           SizedBox(
             height: 5,
@@ -86,7 +58,7 @@ class _StockScreenState extends State<StockScreen> {
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Product Name",
+                    "Product",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
@@ -133,12 +105,28 @@ class _StockScreenState extends State<StockScreen> {
                     ),
                   ),
                 ),
-                child: ShopLists(
-                  listFiles: listfiles[index],
-                  press: () => showMaterialModalBottomSheet(
-                    context: context,
-                    builder: (context) => DetailScreen(
-                      listfile: listfiles[index],
+                child: GestureDetector(
+                  onTap: () {
+                    showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (context) => UpdateStock(
+                        listfile: listfiles[index],
+                      ),
+                    );
+                  },
+                  child: ListTile(
+                    tileColor: kTextLightColor,
+                    leading: Chip(
+                      backgroundColor: kAccentColor,
+                      label: Text(
+                        formatCurrency.format(30),
+                      ),
+                    ),
+                    title: Text(
+                      "Title",
+                    ),
+                    trailing: Text(
+                      "\৳ " + formatCurrency.format(400),
                     ),
                   ),
                 ),

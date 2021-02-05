@@ -42,10 +42,10 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     switch (_authStatus) {
       case AuthStatus.notSigned:
-        return LoginScreen(); //onSignedIn: _signedIn
+        return LoginScreen(onSignedIn: _signedIn); 
         break;
       case AuthStatus.signed:
-        return HomeScreen(); //onSignedOut: _signedOut
+        return HomeScreen(onSignedOut: _signedOut); //
         break;
       default:
         return CircularProgressIndicator();

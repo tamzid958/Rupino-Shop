@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/layouts/return/AddNewReturn.dart';
 import 'package:shopaccount/src/models/costLists.dart';
-
-import 'Lists.dart';
+import 'UpdateReturn.dart';
 
 class ReturnScreen extends StatefulWidget {
   const ReturnScreen({
@@ -16,6 +16,7 @@ class ReturnScreen extends StatefulWidget {
 }
 
 class _ReturnScreenState extends State<ReturnScreen> {
+  final formatCurrency = NumberFormat.compact();
   @override
   Widget build(BuildContext context) {
     void _addNewReturn() {
@@ -53,11 +54,11 @@ class _ReturnScreenState extends State<ReturnScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Product Name",
+                    "Product",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Shop Name",
+                    "Shop",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
@@ -107,8 +108,24 @@ class _ReturnScreenState extends State<ReturnScreen> {
                         ),
                       ),
                     ),
-                    child: ShopLists(
-                      listFiles: listfiles[index],
+                    child: GestureDetector(
+                      onTap: () {
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          builder: (context) => UpdateReturn(),
+                        );
+                      },
+                      child: ListTile(
+                        tileColor: kTextLightColor,
+                        leading: Text("Lorem"),
+                        title: Text(
+                          "lorem",
+                        ),
+                        trailing: Chip(
+                          backgroundColor: kAccentColor,
+                          label: Text(formatCurrency.format(30)),
+                        ),
+                      ),
                     ),
                   ),
                 ),

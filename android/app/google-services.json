@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "253822374507",
+    "project_id": "rupino-shop",
+    "storage_bucket": "rupino-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253822374507:android:07eadebccd6076ed67172e",
+        "android_client_info": {
+          "package_name": "com.xilo.shopaccount"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253822374507-0f1b5njmgpi9b0s50r9rh685b1djnrtp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xilo.shopaccount",
+            "certificate_hash": "4ff6777f750862d0a32b5479001d9cd1b34e2790"
+          }
+        },
+        {
+          "client_id": "253822374507-ml0l1kd57lib2fh8njt3ng56jv5h6vc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xilo.shopaccount",
+            "certificate_hash": "a11c152cf1960ad151701f2330d27cf7b0be288e"
+          }
+        },
+        {
+          "client_id": "253822374507-i4onnh5a1f1qr8ouq2tg3fofb0gluupj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8RRROJrAhToncHGUtDVieHVmsaSrYFtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "253822374507-i4onnh5a1f1qr8ouq2tg3fofb0gluupj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

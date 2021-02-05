@@ -52,7 +52,7 @@ class _DamageScreenState extends State<DamageScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Product Name",
+                    "Product",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(

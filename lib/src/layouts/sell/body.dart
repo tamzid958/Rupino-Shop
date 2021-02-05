@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/layouts/sell/AddNewSell.dart';
 import 'package:shopaccount/src/models/costLists.dart';
-
-import 'Lists.dart';
+import 'UpdateSell.dart';
 
 class SellScreen extends StatefulWidget {
   const SellScreen({
@@ -16,6 +16,7 @@ class SellScreen extends StatefulWidget {
 }
 
 class _SellScreenState extends State<SellScreen> {
+  final formatCurrency = NumberFormat.compact();
   @override
   Widget build(BuildContext context) {
     void _addNewSell() {
@@ -57,7 +58,7 @@ class _SellScreenState extends State<SellScreen> {
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Product Name",
+                    "Product",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
@@ -107,8 +108,26 @@ class _SellScreenState extends State<SellScreen> {
                         ),
                       ),
                     ),
-                    child: ShopLists(
-                      listFiles: listfiles[index],
+                    child: GestureDetector(
+                      onTap: () {
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          builder: (context) => UpdateSell(),
+                        );
+                      },
+                      child: ListTile(
+                        tileColor: kTextLightColor,
+                        leading: Chip(
+                          backgroundColor: kAccentColor,
+                          label: Text(formatCurrency.format(300)),
+                        ),
+                        title: Text(
+                          "lorem",
+                        ),
+                        trailing: Text(
+                          "\৳ " + formatCurrency.format(300),
+                        ),
+                      ),
                     ),
                   ),
                 ),

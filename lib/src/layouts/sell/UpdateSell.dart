@@ -3,25 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/models/costLists.dart';
 
-class AddNewStock extends StatefulWidget {
-  AddNewStock({Key key}) : super(key: key);
+class UpdateSell extends StatefulWidget {
+  UpdateSell({Key key}) : super(key: key);
 
   @override
-  _AddNewStockState createState() => _AddNewStockState();
+  _UpdateSellState createState() => _UpdateSellState();
 }
 
-class _AddNewStockState extends State<AddNewStock> {
+class _UpdateSellState extends State<UpdateSell> {
   List<String> items = List();
-  var products;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final totlQuantityController = TextEditingController();
-  final perQuantityPriceController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     listfiles.forEach((element) {
@@ -44,6 +35,21 @@ class _AddNewStockState extends State<AddNewStock> {
                     return "Required field";
                   else
                     return null;
+                },
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter Shop Name',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
                 },
               ),
               SizedBox(

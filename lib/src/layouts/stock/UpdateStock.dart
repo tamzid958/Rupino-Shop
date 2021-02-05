@@ -4,7 +4,8 @@ import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/models/costLists.dart';
 
 class UpdateStock extends StatefulWidget {
-  UpdateStock({Key key}) : super(key: key);
+  final ListFiles listfile;
+  UpdateStock({Key key, @required this.listfile}) : super(key: key);
 
   @override
   _UpdateStockState createState() => _UpdateStockState();
