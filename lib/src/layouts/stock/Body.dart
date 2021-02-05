@@ -1,28 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/layouts/stock/AddNewStock.dart';
-import 'package:shopaccount/src/layouts/stock/UpdateStock.dart';
-import 'package:shopaccount/src/models/costLists.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class StockScreen extends StatefulWidget {
-  const StockScreen({
-    Key key,
-  }) : super(key: key);
+  final String data;
+  const StockScreen({Key key, @required this.data}) : super(key: key);
 
   @override
-  _StockScreenState createState() => _StockScreenState();
+  _StockScreenState createState() => _StockScreenState(data: data);
 }
 
 class _StockScreenState extends State<StockScreen> {
+  String data;
+  _StockScreenState({this.data});
   final formatCurrency = NumberFormat.compact();
   @override
   Widget build(BuildContext context) {
     void _addNewStock() {
       showMaterialModalBottomSheet(
         context: context,
-        builder: (context) => AddNewStock(),
+        builder: (context) => AddNewStock(data: data),
       );
     }
 
@@ -58,11 +59,11 @@ class _StockScreenState extends State<StockScreen> {
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Product",
+                    "Per Quantity Price",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Total Price",
+                    "SubTotal",
                     style: TextStyle(color: kWhiteColor),
                   ),
                 ],
@@ -74,64 +75,92 @@ class _StockScreenState extends State<StockScreen> {
           ),
           Container(
             height: MediaQuery.of(context).size.height / 1.7,
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
-              itemCount: listfiles.length,
-              separatorBuilder: (BuildContext context, int index) => Divider(
-                height: 10,
-                color: kLightBlueColor,
-                thickness: 1,
-              ),
-              itemBuilder: (context, int index) => Dismissible(
-                key: Key(
-                  listfiles[index].id.toString(),
-                ),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  setState(() {
-                    listfiles.removeAt(index);
-                  });
-                },
-                background: Container(
-                  color: kRedColor,
-                  child: Padding(
-                    padding: EdgeInsets.all(KmodiPaddin),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.delete, color: kWhiteColor),
-                      ],
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    showMaterialModalBottomSheet(
-                      context: context,
-                      builder: (context) => UpdateStock(
-                        listfile: listfiles[index],
+            child: FutureBuilder(
+                future: CRUD.getChildData('products', 'stocks', data),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemCount: snapshot.data.size,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Divider(
+                        height: 10,
+                        color: kLightBlueColor,
+                        thickness: 1,
+                      ),
+                      itemBuilder: (context, int index) => Dismissible(
+                        key: ObjectKey(
+                          snapshot.data.docs[index].id,
+                        ),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          setState(
+                            () {
+                              snapshot.data.docs.removeAt(index);
+                              CRUD.deleteChildData('products', data, 'stocks',
+                                  snapshot.data.docs[index].id);
+                              CRUD.updateData('products', data, {
+                                'profit': FieldValue.increment(
+                                  snapshot.data.docs[index]['quantity'] *
+                                      snapshot.data.docs[index]
+                                          ['per quantity price'],
+                                ),
+                                'stock': FieldValue.increment(
+                                  -snapshot.data.docs[index]['quantity'],
+                                ),
+                              });
+                            },
+                          );
+                        },
+                        background: Container(
+                          color: kRedColor,
+                          child: Padding(
+                            padding: EdgeInsets.all(KmodiPaddin),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.delete, color: kWhiteColor),
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          tileColor: kTextLightColor,
+                          leading: Chip(
+                            backgroundColor: kAccentColor,
+                            label: Text(
+                              formatCurrency.format(
+                                snapshot.data.docs[index]['quantity'],
+                              ),
+                            ),
+                          ),
+                          title: Center(
+                            child: Text(
+                              "\৳ " +
+                                  formatCurrency.format(
+                                    snapshot.data.docs[index]
+                                        ['per quantity price'],
+                                  ),
+                            ),
+                          ),
+                          trailing: Text(
+                            "\৳ " +
+                                formatCurrency.format(
+                                  snapshot.data.docs[index]['quantity'] *
+                                      snapshot.data.docs[index]
+                                          ['per quantity price'],
+                                ),
+                          ),
+                        ),
                       ),
                     );
-                  },
-                  child: ListTile(
-                    tileColor: kTextLightColor,
-                    leading: Chip(
-                      backgroundColor: kAccentColor,
-                      label: Text(
-                        formatCurrency.format(30),
-                      ),
-                    ),
-                    title: Text(
-                      "Title",
-                    ),
-                    trailing: Text(
-                      "\৳ " + formatCurrency.format(400),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
           ),
         ],
       ),

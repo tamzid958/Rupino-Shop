@@ -1,28 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/layouts/return/AddNewReturn.dart';
-import 'package:shopaccount/src/models/costLists.dart';
-import 'UpdateReturn.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class ReturnScreen extends StatefulWidget {
-  const ReturnScreen({
-    Key key,
-  }) : super(key: key);
+  final String data;
+  const ReturnScreen({Key key, @required this.data}) : super(key: key);
 
   @override
-  _ReturnScreenState createState() => _ReturnScreenState();
+  _ReturnScreenState createState() => _ReturnScreenState(data: data);
 }
 
 class _ReturnScreenState extends State<ReturnScreen> {
+  String data;
+  _ReturnScreenState({this.data});
   final formatCurrency = NumberFormat.compact();
   @override
   Widget build(BuildContext context) {
     void _addNewReturn() {
       showMaterialModalBottomSheet(
         context: context,
-        builder: (context) => AddNewReturn(),
+        builder: (context) => AddNewReturn(data: data),
       );
     }
 
@@ -54,10 +55,6 @@ class _ReturnScreenState extends State<ReturnScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Product",
-                    style: TextStyle(color: kWhiteColor),
-                  ),
-                  Text(
                     "Shop",
                     style: TextStyle(color: kWhiteColor),
                   ),
@@ -76,58 +73,67 @@ class _ReturnScreenState extends State<ReturnScreen> {
             height: MediaQuery.of(context).size.height / 1.7,
             child: Stack(
               children: [
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: ClampingScrollPhysics(),
-                  itemCount: listfiles.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      Divider(
-                    height: 10,
-                    color: kLightBlueColor,
-                    thickness: 1,
-                  ),
-                  itemBuilder: (context, int index) => Dismissible(
-                    key: Key(
-                      listfiles[index].id.toString(),
-                    ),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) {
-                      setState(() {
-                        listfiles.removeAt(index);
-                      });
-                    },
-                    background: Container(
-                      color: kRedColor,
-                      child: Padding(
-                        padding: EdgeInsets.all(KmodiPaddin),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(Icons.delete, color: kWhiteColor),
-                          ],
+                FutureBuilder(
+                  future: CRUD.getChildData('products', 'returns', data),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: snapshot.data.size,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            Divider(
+                          height: 10,
+                          color: kLightBlueColor,
+                          thickness: 1,
                         ),
-                      ),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        showMaterialModalBottomSheet(
-                          context: context,
-                          builder: (context) => UpdateReturn(),
-                        );
-                      },
-                      child: ListTile(
-                        tileColor: kTextLightColor,
-                        leading: Text("Lorem"),
-                        title: Text(
-                          "lorem",
+                        itemBuilder: (context, int index) => Dismissible(
+                          key: ObjectKey(snapshot.data.docs.elementAt(index)),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            setState(() {
+                              snapshot.data.docs.removeAt(index);
+                              CRUD.deleteChildData(
+                                'products',
+                                data,
+                                'returns',
+                                snapshot.data.docs[index].id,
+                              );
+                            });
+                          },
+                          background: Container(
+                            color: kRedColor,
+                            child: Padding(
+                              padding: EdgeInsets.all(KmodiPaddin),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(Icons.delete, color: kWhiteColor),
+                                ],
+                              ),
+                            ),
+                          ),
+                          child: ListTile(
+                            tileColor: kTextLightColor,
+                            leading:
+                                Text(snapshot.data.docs[index]['shop name']),
+                            trailing: Chip(
+                              backgroundColor: kAccentColor,
+                              label: Text(
+                                formatCurrency.format(
+                                  snapshot.data.docs[index]['quantity'],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        trailing: Chip(
-                          backgroundColor: kAccentColor,
-                          label: Text(formatCurrency.format(30)),
-                        ),
-                      ),
-                    ),
-                  ),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
                 ),
               ],
             ),

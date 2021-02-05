@@ -1,20 +1,22 @@
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopaccount/constants.dart';
-import 'package:shopaccount/src/models/costLists.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class AddNewStock extends StatefulWidget {
-  AddNewStock({Key key}) : super(key: key);
+  final String data;
+  AddNewStock({Key key, @required this.data}) : super(key: key);
 
   @override
-  _AddNewStockState createState() => _AddNewStockState();
+  _AddNewStockState createState() => _AddNewStockState(data: data);
 }
 
 class _AddNewStockState extends State<AddNewStock> {
-  List<String> items = List();
-  var products;
+  String data;
+  _AddNewStockState({this.data});
+  String chosenProduct;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final totlQuantityController = TextEditingController();
+  final totalQuantityController = TextEditingController();
   final perQuantityPriceController = TextEditingController();
 
   @override
@@ -24,9 +26,6 @@ class _AddNewStockState extends State<AddNewStock> {
 
   @override
   Widget build(BuildContext context) {
-    listfiles.forEach((element) {
-      items.add(element.title);
-    });
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Container(
@@ -35,21 +34,8 @@ class _AddNewStockState extends State<AddNewStock> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownSearch(
-                items: items,
-                hint: "Choose Product",
-                onChanged: print,
-                validator: (String item) {
-                  if (item == null)
-                    return "Required field";
-                  else
-                    return null;
-                },
-              ),
-              SizedBox(
-                height: 5,
-              ),
               TextFormField(
+                controller: totalQuantityController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -66,6 +52,7 @@ class _AddNewStockState extends State<AddNewStock> {
                 height: 5,
               ),
               TextFormField(
+                controller: perQuantityPriceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -87,7 +74,30 @@ class _AddNewStockState extends State<AddNewStock> {
                   color: kOrangeColor,
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      // Process data.
+                      double perQuantityPirce =
+                          double.parse(perQuantityPriceController.text);
+                      double quantity =
+                          double.parse(totalQuantityController.text);
+                      CRUD.updateData(
+                        'products',
+                        data,
+                        {
+                          'stock': FieldValue.increment(quantity),
+                          'profit': FieldValue.increment(
+                            -(perQuantityPirce * quantity),
+                          )
+                        },
+                      );
+                      CRUD.addChildData(
+                        'products',
+                        data,
+                        'stocks',
+                        {
+                          'per quantity price': perQuantityPirce,
+                          'quantity': quantity
+                        },
+                      );
+                      Navigator.pop(context);
                     }
                   },
                   icon: Icon(

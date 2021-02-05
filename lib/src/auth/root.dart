@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopaccount/src/auth/provider.dart';
-import 'package:shopaccount/src/layouts/home/home.dart';
 import 'package:shopaccount/src/layouts/login/login.dart';
+import 'package:shopaccount/src/layouts/products/Body.dart';
 
 class RootPage extends StatefulWidget {
   @override
@@ -42,10 +42,10 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     switch (_authStatus) {
       case AuthStatus.notSigned:
-        return LoginScreen(onSignedIn: _signedIn); 
+        return LoginScreen(onSignedIn: _signedIn);
         break;
       case AuthStatus.signed:
-        return HomeScreen(onSignedOut: _signedOut); //
+        return ProductsScreen(onSignedOut: _signedOut); //
         break;
       default:
         return CircularProgressIndicator();

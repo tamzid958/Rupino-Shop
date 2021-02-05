@@ -49,7 +49,7 @@ class _AddNewProductState extends State<AddNewProduct> {
                       Map<String, dynamic> data = {
                         "name": productName,
                         "stock": 0,
-                        "profit": 0
+                        "profit": 0,
                       };
                       CRUD.addData('products', data);
                       Navigator.pop(context);

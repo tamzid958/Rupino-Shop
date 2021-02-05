@@ -1,23 +1,25 @@
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopaccount/constants.dart';
-import 'package:shopaccount/src/models/costLists.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class AddNewSell extends StatefulWidget {
-  AddNewSell({Key key}) : super(key: key);
+  final String data;
+  AddNewSell({Key key, @required this.data}) : super(key: key);
 
   @override
-  _AddNewSellState createState() => _AddNewSellState();
+  _AddNewSellState createState() => _AddNewSellState(data: data);
 }
 
 class _AddNewSellState extends State<AddNewSell> {
-  List<String> items = List();
+  String data;
+  _AddNewSellState({this.data});
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final totalQuantityController = TextEditingController();
+  final perQuantityPriceController = TextEditingController();
+  final shopNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    listfiles.forEach((element) {
-      items.add(element.title);
-    });
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Container(
@@ -26,21 +28,8 @@ class _AddNewSellState extends State<AddNewSell> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownSearch(
-                items: items,
-                hint: "Choose Product",
-                onChanged: print,
-                validator: (String item) {
-                  if (item == null)
-                    return "Required field";
-                  else
-                    return null;
-                },
-              ),
-              SizedBox(
-                height: 5,
-              ),
               TextFormField(
+                controller: shopNameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter Shop Name',
@@ -56,6 +45,7 @@ class _AddNewSellState extends State<AddNewSell> {
                 height: 5,
               ),
               TextFormField(
+                controller: totalQuantityController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -72,6 +62,7 @@ class _AddNewSellState extends State<AddNewSell> {
                 height: 5,
               ),
               TextFormField(
+                controller: perQuantityPriceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -93,8 +84,32 @@ class _AddNewSellState extends State<AddNewSell> {
                   color: kOrangeColor,
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      // Process data.
+                      double perQuantityPirce =
+                          double.parse(perQuantityPriceController.text);
+                      double quantity =
+                          double.parse(totalQuantityController.text);
+                      CRUD.updateData(
+                        'products',
+                        data,
+                        {
+                          'stock': FieldValue.increment(-quantity),
+                          'profit': FieldValue.increment(
+                            (perQuantityPirce * quantity),
+                          )
+                        },
+                      );
+                      CRUD.addChildData(
+                        'products',
+                        data,
+                        'sells',
+                        {
+                          'shop name': shopNameController.text,
+                          'quantity': quantity,
+                          'per quantity price': perQuantityPirce
+                        },
+                      );
                     }
+                    Navigator.pop(context);
                   },
                   icon: Icon(
                     Icons.done,

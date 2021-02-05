@@ -4,21 +4,20 @@ import 'package:shopaccount/constants.dart';
 import 'package:shopaccount/src/models/costLists.dart';
 
 class AddNewReturn extends StatefulWidget {
-  AddNewReturn({Key key}) : super(key: key);
+  final String data;
+  AddNewReturn({Key key, @required this.data}) : super(key: key);
 
   @override
-  _AddNewReturnState createState() => _AddNewReturnState();
+  _AddNewReturnState createState() => _AddNewReturnState(data: data);
 }
 
 class _AddNewReturnState extends State<AddNewReturn> {
-  List<String> items = List();
+  String data;
+  _AddNewReturnState({this.data});
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    listfiles.forEach((element) {
-      items.add(element.title);
-    });
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Container(
@@ -27,20 +26,6 @@ class _AddNewReturnState extends State<AddNewReturn> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownSearch(
-                items: items,
-                hint: "Choose Product",
-                onChanged: print,
-                validator: (String item) {
-                  if (item == null)
-                    return "Required field";
-                  else
-                    return null;
-                },
-              ),
-              SizedBox(
-                height: 5,
-              ),
               TextFormField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),

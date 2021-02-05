@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shopaccount/constants.dart';
-import 'package:shopaccount/src/layouts/damage/body.dart';
-import 'package:shopaccount/src/layouts/miscellans/body.dart';
 import 'package:shopaccount/src/layouts/return/body.dart';
 import 'package:shopaccount/src/layouts/sell/body.dart';
 import 'package:shopaccount/src/layouts/stock/Body.dart';
-import 'package:shopaccount/src/layouts/user/user.dart';
-import 'package:shopaccount/src/models/costLists.dart';
-import 'package:shopaccount/src/layouts/products/Body.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback onSignedOut;
-  const HomeScreen({Key key, this.onSignedOut}) : super(key: key);
+  final String data;
+  final String productname;
+  const HomeScreen(
+      {Key key,
+      this.onSignedOut,
+      @required this.data,
+      @required this.productname})
+      : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() =>
+      _HomeScreenState(data: data, productname: productname);
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String data, productname;
+  _HomeScreenState({this.data, this.productname});
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
@@ -28,37 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double profit = 0;
-    final formatCurrency = NumberFormat.compact();
     final List<Widget> _children = [
-      StockScreen(),
-      SellScreen(),
-      MiscScreen(),
-      ReturnScreen(),
-      DamageScreen(),
-      ProductsScreen(),
+      StockScreen(data: data),
+      SellScreen(data: data),
+      ReturnScreen(data: data),
     ];
-    listfiles.forEach((element) {
-      profit += element.perQuantityPrice * element.quantity;
-    });
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("Home"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.supervised_user_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserScreen(
-                    onSignedOut: widget.onSignedOut,
-                  ),
-                ),
-              );
-            },
-          ),
+        title: Text(productname),
+        actions: [
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
@@ -94,20 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Sell',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.explicit),
-                label: 'Misc.',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.keyboard_return),
                 label: 'Return',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.broken_image_outlined),
-                label: 'Damage',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.list),
-                label: 'Products',
               ),
             ],
             currentIndex: _selectedIndex,
@@ -115,16 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: _onItemTapped,
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: kBlueColor,
-        label: Text("\৳ " + formatCurrency.format(profit)),
-        icon: Icon(
-          Icons.timeline,
-          color: kWhiteColor,
-        ),
-        onPressed: () => null,
       ),
     );
   }
