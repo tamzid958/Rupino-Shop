@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shopaccount/constants.dart';
@@ -16,6 +17,9 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   int _selectedIndex = 0;
+  double profit = 0;
+  double temptotal1 = 0, temptotal2 = 0;
+  var productProfit, costLoss;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -23,6 +27,32 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   final formatCurrency = NumberFormat.compact();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    FirebaseFirestore.instance.collection('products').snapshots().listen(
+      (snapshot) {
+        for (int i = 0; i < snapshot.size; i++) {
+          temptotal1 += snapshot.docs[i]['profit'];
+        }
+      },
+    );
+    FirebaseFirestore.instance.collection('costs').snapshots().listen(
+      (snapshot) {
+        for (int i = 0; i < snapshot.size; i++) {
+          temptotal2 += snapshot.docs[i]['cost'];
+        }
+        setState(() {
+          profit = temptotal1 - temptotal2;
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +82,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              setState(() {});
+              setState(
+                () {
+                  fetchData();
+                },
+              );
             },
           ),
         ],
@@ -97,7 +131,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: kBlueColor,
-        label: Text("\৳ " + formatCurrency.format(30)),
+        label: Text("\৳ " + formatCurrency.format(profit)),
         icon: Icon(
           Icons.timeline,
           color: kWhiteColor,

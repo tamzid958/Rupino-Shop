@@ -63,7 +63,7 @@ class _StockScreenState extends State<StockScreen> {
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "SubTotal",
+                    "Total",
                     style: TextStyle(color: kWhiteColor),
                   ),
                 ],
@@ -98,18 +98,22 @@ class _StockScreenState extends State<StockScreen> {
                           setState(
                             () {
                               snapshot.data.docs.removeAt(index);
+                              CRUD.updateData(
+                                'products',
+                                data,
+                                {
+                                  'profit': FieldValue.increment(
+                                    snapshot.data.docs[index]['quantity'] *
+                                        snapshot.data.docs[index]
+                                            ['per quantity price'],
+                                  ),
+                                  'stock': FieldValue.increment(
+                                    -snapshot.data.docs[index]['quantity'],
+                                  ),
+                                },
+                              );
                               CRUD.deleteChildData('products', data, 'stocks',
                                   snapshot.data.docs[index].id);
-                              CRUD.updateData('products', data, {
-                                'profit': FieldValue.increment(
-                                  snapshot.data.docs[index]['quantity'] *
-                                      snapshot.data.docs[index]
-                                          ['per quantity price'],
-                                ),
-                                'stock': FieldValue.increment(
-                                  -snapshot.data.docs[index]['quantity'],
-                                ),
-                              });
                             },
                           );
                         },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopaccount/constants.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class AddNewMisc extends StatefulWidget {
   AddNewMisc({Key key}) : super(key: key);
@@ -10,6 +11,8 @@ class AddNewMisc extends StatefulWidget {
 
 class _AddNewMiscState extends State<AddNewMisc> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final costnameController = TextEditingController();
+  final costController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,6 +24,7 @@ class _AddNewMiscState extends State<AddNewMisc> {
           child: Column(
             children: [
               TextFormField(
+                controller: costnameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter Cost Name',
@@ -36,6 +40,7 @@ class _AddNewMiscState extends State<AddNewMisc> {
                 height: 5,
               ),
               TextFormField(
+                controller: costController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -57,7 +62,14 @@ class _AddNewMiscState extends State<AddNewMisc> {
                   color: kOrangeColor,
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      // Process data.
+                      CRUD.addData(
+                        'costs',
+                        {
+                          'cost name': costnameController.text,
+                          'cost': double.parse(costController.text)
+                        },
+                      );
+                      Navigator.pop(context);
                     }
                   },
                   icon: Icon(

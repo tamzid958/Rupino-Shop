@@ -62,7 +62,7 @@ class _ProductListState extends State<ProductList> {
                         style: TextStyle(color: kWhiteColor),
                       ),
                       Text(
-                        "Quantity",
+                        "Stock",
                         style: TextStyle(color: kWhiteColor),
                       ),
                     ],
@@ -143,7 +143,7 @@ class _ProductListState extends State<ProductList> {
                                   backgroundColor: kAccentColor,
                                   label: Text(
                                     formatCurrency.format(
-                                      30,
+                                      snapshot.data.docs[index]['stock'],
                                     ),
                                   ),
                                 ),

@@ -1,7 +1,6 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:shopaccount/constants.dart';
-import 'package:shopaccount/src/models/costLists.dart';
+import 'package:shopaccount/src/services/crud.dart';
 
 class AddNewDamage extends StatefulWidget {
   AddNewDamage({Key key}) : super(key: key);
@@ -11,13 +10,11 @@ class AddNewDamage extends StatefulWidget {
 }
 
 class _AddNewDamageState extends State<AddNewDamage> {
-  List<String> items = List();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final productnameController = TextEditingController();
+  final quantityController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    listfiles.forEach((element) {
-      items.add(element.title);
-    });
     return Padding(
       padding: EdgeInsets.all(KdefaultPaddin),
       child: Container(
@@ -26,21 +23,24 @@ class _AddNewDamageState extends State<AddNewDamage> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownSearch(
-                items: items,
-                hint: "Choose Product",
-                onChanged: print,
-                validator: (String item) {
-                  if (item == null)
-                    return "Required field";
-                  else
-                    return null;
+              TextFormField(
+                controller: productnameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter Product Name',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
                 },
               ),
               SizedBox(
                 height: 5,
               ),
               TextFormField(
+                controller: quantityController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -62,7 +62,14 @@ class _AddNewDamageState extends State<AddNewDamage> {
                   color: kOrangeColor,
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      // Process data.
+                      CRUD.addData(
+                        'damages',
+                        {
+                          'name': productnameController.text,
+                          'quantity': double.parse(quantityController.text)
+                        },
+                      );
+                      Navigator.pop(context);
                     }
                   },
                   icon: Icon(

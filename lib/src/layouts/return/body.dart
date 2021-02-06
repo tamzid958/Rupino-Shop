@@ -55,11 +55,15 @@ class _ReturnScreenState extends State<ReturnScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
+                    "Quantity",
+                    style: TextStyle(color: kWhiteColor),
+                  ),
+                  Text(
                     "Shop",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Quantity",
+                    "Total",
                     style: TextStyle(color: kWhiteColor),
                   ),
                 ],
@@ -93,12 +97,22 @@ class _ReturnScreenState extends State<ReturnScreen> {
                           onDismissed: (direction) {
                             setState(() {
                               snapshot.data.docs.removeAt(index);
-                              CRUD.deleteChildData(
+                              CRUD.updateData(
                                 'products',
                                 data,
-                                'returns',
-                                snapshot.data.docs[index].id,
+                                {
+                                  'profit': FieldValue.increment(
+                                    -(snapshot.data.docs[index]['quantity'] *
+                                        snapshot.data.docs[index]
+                                            ['per quantity price']),
+                                  ),
+                                  'stock': FieldValue.increment(
+                                    snapshot.data.docs[index]['quantity'],
+                                  ),
+                                },
                               );
+                              CRUD.deleteChildData('products', data, 'returns',
+                                  snapshot.data.docs[index].id);
                             });
                           },
                           background: Container(
@@ -115,14 +129,24 @@ class _ReturnScreenState extends State<ReturnScreen> {
                           ),
                           child: ListTile(
                             tileColor: kTextLightColor,
-                            leading:
-                                Text(snapshot.data.docs[index]['shop name']),
-                            trailing: Chip(
+                            leading: Chip(
                               backgroundColor: kAccentColor,
                               label: Text(
                                 formatCurrency.format(
                                   snapshot.data.docs[index]['quantity'],
                                 ),
+                              ),
+                            ),
+                            title: Center(
+                              child: Text(
+                                snapshot.data.docs[index]['shop name'],
+                              ),
+                            ),
+                            trailing: Text(
+                              formatCurrency.format(
+                                snapshot.data.docs[index]['quantity'] *
+                                    snapshot.data.docs[index]
+                                        ['per quantity price'],
                               ),
                             ),
                           ),

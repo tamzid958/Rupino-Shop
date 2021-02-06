@@ -59,11 +59,11 @@ class _SellScreenState extends State<SellScreen> {
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "SubTotal (Per Quantity)",
+                    "Shop",
                     style: TextStyle(color: kWhiteColor),
                   ),
                   Text(
-                    "Shop",
+                    "Total (Per Quantity)",
                     style: TextStyle(color: kWhiteColor),
                   ),
                 ],
@@ -97,21 +97,27 @@ class _SellScreenState extends State<SellScreen> {
                           ),
                           direction: DismissDirection.endToStart,
                           onDismissed: (direction) {
-                            setState(() {
-                              snapshot.data.docs.removeAt(index);
-                              CRUD.deleteChildData('products', data, 'sells',
-                                  snapshot.data.docs[index].id);
-                              CRUD.updateData('products', data, {
-                                'profit': FieldValue.increment(
-                                  -(snapshot.data.docs[index]['quantity'] *
-                                      snapshot.data.docs[index]
-                                          ['per quantity price']),
-                                ),
-                                'stock': FieldValue.increment(
-                                  snapshot.data.docs[index]['quantity'],
-                                ),
-                              });
-                            });
+                            setState(
+                              () {
+                                snapshot.data.docs.removeAt(index);
+                                CRUD.updateData(
+                                  'products',
+                                  data,
+                                  {
+                                    'profit': FieldValue.increment(
+                                      (snapshot.data.docs[index]['quantity'] *
+                                          snapshot.data.docs[index]
+                                              ['per quantity price']),
+                                    ),
+                                    'stock': FieldValue.increment(
+                                      -snapshot.data.docs[index]['quantity'],
+                                    ),
+                                  },
+                                );
+                                CRUD.deleteChildData('products', data, 'sells',
+                                    snapshot.data.docs[index].id);
+                              },
+                            );
                           },
                           background: Container(
                             color: kRedColor,
@@ -134,19 +140,19 @@ class _SellScreenState extends State<SellScreen> {
                             ),
                             title: Center(
                               child: Text(
-                                "\৳ " +
-                                    formatCurrency.format(
-                                        snapshot.data.docs[index]['quantity'] *
-                                            snapshot.data.docs[index]
-                                                ['per quantity price']) +
-                                    " (" +
-                                    formatCurrency.format(snapshot.data
-                                        .docs[index]['per quantity price']) +
-                                    ")",
+                                snapshot.data.docs[index]['shop name'],
                               ),
                             ),
                             trailing: Text(
-                              snapshot.data.docs[index]['shop name'],
+                              "\৳ " +
+                                  formatCurrency.format(
+                                      snapshot.data.docs[index]['quantity'] *
+                                          snapshot.data.docs[index]
+                                              ['per quantity price']) +
+                                  " (\৳" +
+                                  formatCurrency.format(snapshot
+                                      .data.docs[index]['per quantity price']) +
+                                  ")",
                             ),
                           ),
                         ),
