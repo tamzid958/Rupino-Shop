@@ -83,9 +83,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             icon: Icon(Icons.refresh),
             onPressed: () {
               setState(
-                () {
-                  fetchData();
-                },
+                () {},
               );
             },
           ),
